@@ -1,5 +1,7 @@
 import React, { useState } from 'react'; 
 import ListDisplay from './ListDisplay'
+import {useFormik} from "formik"
+
 
 const AddTask = () => {
     const [input, setInput] = useState('');
@@ -19,21 +21,47 @@ const AddTask = () => {
     }
         
 
+    const formik = useFormik({
+        initialValues: {
+            task: "", 
+            category: null
+        }, 
+        onSubmit: (values) => {
+          // if (values.category !== null && values.task !== "") {
+          //     setList([...list, values]);
+          //     formik.handleReset(); //clears out the form once user uses inputs
+          // } else {
+          //     return
+          // }
+
+          if (values.category === null || values.task === "") return
+          setList([...list, values]);
+              formik.handleReset();
+        }
+    })
+
     return (
         <div>
             <h1>Add Task</h1>
-            <div className="task-form">
-                <input type="text" value={input} onChange={(e) => setInput(e.target.value)} />
+            <form className="task-form" onSubmit={formik.handleSubmit}>
+                <input
+                    type="text"
+                    value={formik.values.task}
+                    name="task"
+                    onChange={formik.handleChange} />
                
-                <select onChange={(e) => setCategory(e.target.value)}>
+                <select
+                    onChange={formik.handleChange}
+                    name="category"
+                    value={formik.values.category}>
                     <option selected disabled defaultValue>Category</option>
                     <option value="Personal">Personal</option>
                     <option value="Work">Work</option>
                     <option value="Errands">Errands</option>
                 </select>
-                 <button onClick={handleClick}>Add Task</button>
+                 <button type= "submit">Add Task</button>
             
-            </div>
+            </form>
             <ListDisplay list={list} deleteTask={deleteTask} />   
             
             
